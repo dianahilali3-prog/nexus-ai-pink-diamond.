@@ -1,0 +1,19 @@
+{
+  "name": "NEXUS AI — Pink Diamond Edition",
+  "short_name": "NEXUS AI",
+  "description": "Espace créatif IA mobile-first — Pink Diamond Edition",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#180d19",
+  "theme_color": "#180d19",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/nexus-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "scope": "/"
+}
