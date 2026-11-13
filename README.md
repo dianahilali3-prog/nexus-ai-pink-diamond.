@@ -1,33 +1,42 @@
-# NEXUS AI API v0.2.0
+# NEXUS AI — Pink Diamond Edition
 
-This is a real chat gateway for an OpenAI-compatible provider. It does not fake image or video generation.
+Assistant IA créatif, **gratuit, open source et privé**, pensé d'abord pour le téléphone.
+Site : **https://dianahilali3-prog.github.io/NEXUSAI/**
 
-## Local development
+## Ce que fait l'application
+- **Chat** en flux continu, Markdown (listes, tableaux, code), copier / régénérer / arrêter, plusieurs conversations sauvegardées, mémoire de la conversation.
+- **Plusieurs fournisseurs gratuits avec bascule automatique** : Pollinations (sans clé), OpenRouter (modèles `:free`), Groq, Pollinations avec clé, ton serveur (Ollama, LM Studio, llama.cpp, vLLM…), et une **IA qui tourne dans le navigateur** (Transformers.js, WebGPU/WASM, hors ligne).
+- **Voix dans les deux sens** : dictée (navigateur ou **Whisper** open source sur l'appareil), lecture à voix haute (navigateur ou **Piper** open source), choix langue/voix/vitesse, et **conversation vocale mains libres**.
+- **Recherche web** (Wikipédia, ou ton instance SearXNG) avec sources citées ; **lecture des liens** collés (Jina Reader).
+- **Documents** : PDF, Word (.docx), TXT, Markdown, CSV, HTML → réponses basées sur le document (sélection des passages pertinents sur l'appareil).
+- **Images** : Pollinations (sans clé) avec secours FLUX.1 schnell (Hugging Face), prompt amélioré automatiquement, styles, formats, téléchargement, partage. **Description d'une image** importée (modèle local).
+- **Rapport / projet → images & vidéo** : storyboard généré par l'IA, une image par scène, puis **montage vidéo dans le navigateur** (zoom lent, fondus, sous-titres, voix off Piper facultative).
+- **Vidéo IA (bêta)** : LTX-Video sur un espace Hugging Face gratuit (quota GPU quotidien) ou Pollinations avec clé.
+- **Agents** (NEXUS, Muse, Orion, Pixel, Atlas, Scribe, Dev) + création d'agents personnels.
+- **Apprentissage local** : mémoire (souvenirs) et « leçons » tirées des 👎, visibles et supprimables.
+- **PWA** installable, interface et galerie disponibles hors ligne. Page **Confidentialité** détaillant chaque service contacté.
 
-1. Install Python 3.11+.
-2. Start Ollama and pull a model compatible with your hardware, e.g. `ollama pull qwen2.5:3b` (model availability and performance depend on RAM/CPU).
-3. `python -m venv .venv` then activate it.
-4. `pip install -r requirements.txt`.
-5. Copy `.env.example` to `.env` and adjust settings. Load env vars in your shell or use `python-dotenv` in your deployment entrypoint.
-6. From `server/`: `uvicorn app.main:app --host 0.0.0.0 --port 8000`.
+## Limites honnêtes
+Aucun service gratuit n'est illimité. Voir [`docs/SERVICES.md`](docs/SERVICES.md) pour les vérifications réelles (CORS, quotas, conditions d'utilisation) et [`docs/ENGINE_RESEARCH.md`](docs/ENGINE_RESEARCH.md).
 
-## Endpoints
-- `GET /health`: service and engine readiness metadata.
-- `POST /v1/chat`: OpenAI-compatible chat completion proxy.
+## Développement
+Prérequis : Node.js 20+.
+```bash
+npm install
+npm run check      # TypeScript
+npm run build      # compile dans dist/
+npm run preview    # aperçu local
+```
+Pour GitHub Pages, le workflow `.github/workflows/deploy.yml` compile avec `VITE_BASE=/<nom-du-dépôt>/` et publie `dist/`.
 
-Example request body:
-```json
-{"messages":[{"role":"user","content":"Bonjour !"}]}
+## Structure
+```
+src/            interface React + services (lib/) + worker IA locale (workers/)
+public/         icônes de l'application
+server/         passerelle FastAPI facultative (compatible OpenAI)
+docs/           recherches et vérifications des services
+.github/        déploiement GitHub Pages
 ```
 
-## iPhone connectivity
-The PWA needs a publicly reachable HTTPS API URL. A localhost Ollama URL on your HP is not reachable from the iPhone outside the same network and is not a public cloud service. Do not expose Ollama directly to the internet. Put this API behind HTTPS, authentication, rate limiting and a firewall before deployment.
-
-## Image/video status
-Not connected in this release. ComfyUI requires a separate GPU-capable host and explicit workflow JSON. This API reports those engines as `not_configured` rather than claiming jobs were generated.
-
-## Security
-- Keep `OPENAI_API_KEY` on the server only.
-- Restrict `CORS_ORIGINS` to the deployed PWA origin.
-- Add authentication and per-user rate limits before public deployment.
-- Use private object storage for generated files; never trust uploaded filenames or MIME types.
+## Sécurité
+Aucune clé n'est stockée dans le dépôt ni dans le code du site. Les clés facultatives (OpenRouter, Groq, Pollinations, Hugging Face) sont saisies dans les Réglages, restent dans le navigateur et ne sont jamais exportées.
