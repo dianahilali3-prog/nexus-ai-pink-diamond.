@@ -21,7 +21,9 @@ DOMPurify.addHook('afterSanitizeAttributes', node => {
 });
 
 export function renderMarkdown(md: string): string {
-  const html = (marked.parse(md, { async: false }) as string)
+  // Certains modèles enveloppent leur Markdown dans un bloc ```markdown : on l’affiche normalement.
+  const unwrapped = md.replace(/```(?:markdown|md)\s*\n([\s\S]*?)```/gi, '$1');
+  const html = (marked.parse(unwrapped, { async: false }) as string)
     .replace(/<table>/g, '<div class="table-wrap"><table>')
     .replace(/<\/table>/g, '</table></div>');
   return DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'data-copy'], FORBID_TAGS: ['style', 'iframe', 'form', 'input'] });

@@ -28,7 +28,7 @@ export async function makeStoryboard(
         role: 'system',
         content: `Tu es directeur artistique et monteur vidéo. À partir du document fourni, crée un storyboard de ${opts.scenes} scènes qui raconte ou résume fidèlement son contenu (pas d'invention de chiffres).
 Réponds UNIQUEMENT avec du JSON valide, sans texte autour, au format :
-{"title":"titre court","scenes":[{"title":"titre de scène (5 mots max)","caption":"texte affiché à l'écran, 18 mots max, en français","narration":"phrase de voix off en français, 30 mots max","imagePrompt":"English prompt for an image generator, 40-70 words, concrete visual scene, ${opts.style}, no text, no letters, no watermark"}]}
+{"title":"titre court","scenes":[{"title":"titre de scène (5 mots max)","caption":"texte affiché à l'écran, 18 mots max, en français","narration":"phrase de voix off en français, 30 mots max","imagePrompt":"English prompt for an image generator, 30-50 words, commas only, no semicolons, concrete visual scene, ${opts.style}, no text, no letters, no watermark"}]}
 Ton : ${opts.tone}. Garde une cohérence visuelle (mêmes couleurs, même style) entre les scènes.`
       },
       { role: 'user', content: text }

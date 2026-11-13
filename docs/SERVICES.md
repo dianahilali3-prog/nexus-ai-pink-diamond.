@@ -20,6 +20,7 @@ Vérifié le 13 novembre 2026 par des requêtes réelles (en-tête `Origin: http
 ## Constats faits sur le site en ligne (github.io)
 - Le chat Pollinations sans clé répond depuis `https://dianahilali3-prog.github.io` (pas de blocage anti-robot), mais **refuse les requêtes simultanées** : le refus arrive sans en-tête CORS et ressemble à une coupure réseau. NEXUS envoie donc une seule requête à la fois et réessaie deux fois avant de basculer.
 - GPT-OSS 20B est un modèle « à raisonnement » : sans `reasoning_effort`, il peut épuiser sa limite (« output_token_limit_exceeded ») sur les tâches longues. NEXUS utilise `low` pour storyboard, titres et prompts, `medium` pour le chat.
+- Images sans clé : des demandes trop rapprochées reçoivent « 402 » en 0,3 s (limite de cadence, pas un vrai paiement) ; un prompt contenant « ; » échoue immédiatement ; un prompt d'environ 90 mots est refusé. NEXUS espace les images (3 s), réessaie après 8/20/40 s, retire les caractères spéciaux et limite le prompt à ~380 caractères.
 - Depuis `localhost`, Pollinations exige un jeton Cloudflare Turnstile : les tests locaux du chat ne sont pas représentatifs (il faut tester sur github.io).
 
 ## Conditions d'utilisation lues
