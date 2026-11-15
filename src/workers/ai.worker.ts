@@ -17,6 +17,7 @@ type Req =
   | { id: number; type: 'chat'; model: string; messages: { role: string; content: string }[]; maxTokens: number }
   | { id: number; type: 'asr'; model: string; audio: Float32Array; language: string }
   | { id: number; type: 'caption'; image: string }
+  | { id: number; type: 'depth'; image: string }
   | { id: number; type: 'stop' };
 
 // Typage simplifié : les surcharges de pipeline() sont trop complexes pour TypeScript.
@@ -79,6 +80,16 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
       );
       const out = (await asr(req.audio, { language: req.language, task: 'transcribe', chunk_length_s: 30, stride_length_s: 5 } as never)) as { text: string };
       post({ id: req.id, type: 'done', text: out.text?.trim() ?? '' });
+    } else if (req.type === 'depth') {
+      // Depth Anything V2 Small (Apache-2.0, ~27 Mo) : profondeur relative, clair = proche.
+      const est = await load<(img: string) => Promise<unknown>>('depth', () =>
+        makePipe('depth-estimation', 'onnx-community/depth-anything-v2-small', { device: 'wasm', dtype: 'q8', progress_callback: progress(req.id) }) as Promise<(img: string) => Promise<unknown>>
+      );
+      const out = (await est(req.image)) as { depth: { data: Uint8Array | Uint8ClampedArray; width: number; height: number; channels: number } };
+      const d = out.depth;
+      const data = new Uint8Array(d.data.length / d.channels);
+      for (let i = 0; i < data.length; i++) data[i] = d.data[i * d.channels];
+      (self as unknown as DedicatedWorkerGlobalScope).postMessage({ id: req.id, type: 'done', depth: { data, width: d.width, height: d.height } }, [data.buffer]);
     } else if (req.type === 'caption') {
       const cap = await load<ImageToTextPipeline>('caption', () =>
         makePipe('image-to-text', 'Xenova/vit-gpt2-image-captioning', { device: 'wasm', dtype: 'q8', progress_callback: progress(req.id) }) as Promise<ImageToTextPipeline>

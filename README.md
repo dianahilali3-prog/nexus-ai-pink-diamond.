@@ -11,6 +11,7 @@ Site : **https://dianahilali3-prog.github.io/NEXUSAI/**
 - **Documents** : PDF, Word (.docx), TXT, Markdown, CSV, HTML → réponses basées sur le document (sélection des passages pertinents sur l'appareil).
 - **Images** : Pollinations (sans clé) avec secours FLUX.1 schnell (Hugging Face), prompt amélioré automatiquement, styles, formats, téléchargement, partage. **Description d'une image** importée (modèle local).
 - **Rapport / projet → images & vidéo** : storyboard généré par l'IA, une image par scène, puis **montage vidéo dans le navigateur** (zoom lent, fondus, sous-titres, voix off Piper facultative).
+- **Usine à vidéos ∞** : des dizaines de vidéos à la suite, fabriquées sur le téléphone (profondeur 3D Depth Anything V2 + caméra 3D WebGL + effets), à partir d'idées ou de photos.
 - **Vidéo IA (bêta)** : LTX-Video sur un espace Hugging Face gratuit (quota GPU quotidien) ou Pollinations avec clé.
 - **Agents** (NEXUS, Muse, Orion, Pixel, Atlas, Scribe, Dev) + création d'agents personnels.
 - **Apprentissage local** : mémoire (souvenirs) et « leçons » tirées des 👎, visibles et supprimables.

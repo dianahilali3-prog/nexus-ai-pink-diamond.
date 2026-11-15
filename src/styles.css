@@ -207,7 +207,10 @@ textarea.settings-input, .prompt-area { resize: vertical; line-height: 1.5; }
 .prompt-area::placeholder, .settings-input::placeholder, .chat-compose textarea::placeholder { color: #9c8597; }
 .input-with-button { display: flex; gap: 8px; align-items: center; }
 .input-with-button .settings-input { flex: 1; min-width: 0; }
-.two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.two-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 12px; }
+.two-cols > * { min-width: 0; }
+select.settings-input { min-width: 0; text-overflow: ellipsis; }
+.studio-layout > * { min-width: 0; }
 .chip-select { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-select button {
   border: 1px solid var(--line2); background: rgba(255, 255, 255, 0.04); color: var(--muted); border-radius: 99px; padding: 8px 14px; min-height: 40px; font-size: 14px;
@@ -445,7 +448,7 @@ details summary { cursor: pointer; color: var(--pink2); font-weight: 600; font-s
 .voice-hint { color: var(--muted2); max-width: 420px; font-size: 12.5px; }
 
 /* ---------- Studios ---------- */
-.studio-layout { display: grid; gap: 14px; }
+.studio-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .panel-title { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }
 .panel-title h2, .panel-title h3 { font-family: 'Playfair Display', Georgia, serif; font-weight: 500; font-size: 22px; margin: 0; }
 .panel-title h3 { font-size: 19px; }
@@ -472,7 +475,7 @@ details summary { cursor: pointer; color: var(--pink2); font-weight: 600; font-s
 .describe-box { display: flex; gap: 12px; align-items: flex-start; margin-top: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 14px; }
 .describe-box img { width: 90px; height: 90px; object-fit: cover; border-radius: 10px; flex: none; }
 .describe-box p { margin: 0; font-size: 14.5px; }
-.segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); margin-bottom: 14px; }
+.segmented { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 6px; padding: 5px; border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); margin-bottom: 14px; }
 .segmented button { border: 0; background: transparent; color: var(--muted); border-radius: 12px; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; font-weight: 600; padding: 6px; }
 .segmented button.on { background: linear-gradient(115deg, rgba(255, 211, 230, 0.95), rgba(238, 152, 191, 0.95)); color: #351427; }
 .scene-list { display: grid; gap: 10px; margin-bottom: 6px; }
@@ -621,3 +624,17 @@ details summary { cursor: pointer; color: var(--pink2); font-weight: 600; font-s
 .suggest-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .suggest-row button { border: 1px dashed var(--line2); background: transparent; color: var(--pink3); border-radius: 99px; padding: 6px 11px; font-size: 13px; min-height: 34px; }
 .suggest-row button.on { border-style: solid; background: rgba(239, 148, 189, 0.15); }
+
+/* ---------- Usine à vidéos ---------- */
+.job-list { display: grid; gap: 8px; max-height: 70vh; overflow-y: auto; }
+.job-card { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 14px; padding: 8px; background: rgba(255, 255, 255, 0.025); }
+.job-card.done { border-color: rgba(143, 227, 183, 0.35); }
+.job-card.error { border-color: rgba(255, 157, 176, 0.4); }
+.job-thumb { width: 54px; height: 72px; flex: none; border-radius: 10px; overflow: hidden; display: grid; place-items: center; background: rgba(239, 148, 189, 0.1); color: var(--pink2); font-weight: 700; }
+.job-thumb video { width: 100%; height: 100%; object-fit: cover; }
+.job-body { flex: 1; min-width: 0; }
+.job-body b { display: block; font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.job-body small { color: var(--muted); font-size: 12.5px; }
+.job-card.error small { color: var(--err); }
+.job-body .progress { margin: 6px 0 0; height: 5px; }
+.panel-title h2 svg { vertical-align: -2px; color: var(--gold); }

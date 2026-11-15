@@ -1,7 +1,9 @@
 import { getSettings } from './settings';
 
-type Msg = { id: number; type: 'progress' | 'token' | 'done' | 'error' | 'status'; text?: string; file?: string; progress?: number; loaded?: number; total?: number };
+type Msg = { id: number; type: 'progress' | 'token' | 'done' | 'error' | 'status'; text?: string; depth?: DepthMap; file?: string; progress?: number; loaded?: number; total?: number };
 type Handler = (m: Msg) => void;
+
+export interface DepthMap { data: Uint8Array; width: number; height: number }
 
 let worker: Worker | null = null;
 let seq = 0;
@@ -87,4 +89,18 @@ export function transcribeLocal(audio: Float32Array, language: string, onProgres
 
 export function captionLocal(imageDataUrl: string, onProgress?: ProgressFn) {
   return run({ type: 'caption', image: imageDataUrl }, undefined, onProgress);
+}
+
+/** Carte de profondeur d’une image (calculée sur l’appareil). */
+export function estimateDepth(imageDataUrl: string, onProgress?: ProgressFn): Promise<DepthMap> {
+  return new Promise((resolve, reject) => {
+    const id = ++seq;
+    const w = getWorker();
+    handlers.set(id, m => {
+      if (m.type === 'progress') onProgress?.({ file: m.file, progress: m.progress ?? 0 });
+      else if (m.type === 'done' && m.depth) { handlers.delete(id); resolve(m.depth); }
+      else if (m.type === 'error') { handlers.delete(id); reject(new Error(friendly(m.text ?? ''))); }
+    });
+    w.postMessage({ id, type: 'depth', image: imageDataUrl });
+  });
 }

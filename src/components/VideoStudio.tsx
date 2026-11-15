@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import VideoFactory from './VideoFactory';
 import {
-  Clapperboard, Download, FileUp, Film, ImagePlus, Info, Layers3, Loader2, RefreshCw, Sparkles, Square, Trash2, Wand2
+  Clapperboard, Factory, Download, FileUp, Film, ImagePlus, Info, Layers3, Loader2, RefreshCw, Sparkles, Square, Trash2, Wand2
 } from 'lucide-react';
 import { DOC_ACCEPT, readDocument } from '../lib/documents';
 import { downloadBlob, enhancePrompt, extFor, generateImage, STYLES } from '../lib/images';
@@ -24,14 +25,15 @@ function loadProject(): { title: string; source: string; scenes: StoredScene[] }
 }
 
 export default function VideoStudio() {
-  const [mode, setMode] = useState<'project' | 'ai'>('project');
+  const [mode, setMode] = useState<'factory' | 'project' | 'ai'>('factory');
   return (
     <div className="video-studio">
       <div className="segmented" role="tablist" aria-label="Mode du studio vidéo">
-        <button role="tab" aria-selected={mode === 'project'} className={mode === 'project' ? 'on' : ''} onClick={() => setMode('project')}><Layers3 size={16} /> Projet → images & vidéo</button>
-        <button role="tab" aria-selected={mode === 'ai'} className={mode === 'ai' ? 'on' : ''} onClick={() => setMode('ai')}><Sparkles size={16} /> Vidéo IA <span className="nav-tag">BETA</span></button>
+        <button role="tab" aria-selected={mode === 'factory'} className={mode === 'factory' ? 'on' : ''} onClick={() => setMode('factory')}><Factory size={16} /> Usine ∞</button>
+        <button role="tab" aria-selected={mode === 'project'} className={mode === 'project' ? 'on' : ''} onClick={() => setMode('project')}><Layers3 size={16} /> Rapport → vidéo</button>
+        <button role="tab" aria-selected={mode === 'ai'} className={mode === 'ai' ? 'on' : ''} onClick={() => setMode('ai')}><Sparkles size={16} /> IA cloud</button>
       </div>
-      {mode === 'project' ? <ProjectStudio /> : <AiVideo />}
+      {mode === 'factory' ? <VideoFactory /> : mode === 'project' ? <ProjectStudio /> : <AiVideo />}
     </div>
   );
 }

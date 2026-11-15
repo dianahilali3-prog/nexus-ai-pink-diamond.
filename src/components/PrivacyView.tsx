@@ -11,6 +11,7 @@ const ROWS: [string, string, string, string][] = [
   ['Lecture de liens', 'r.jina.ai', 'L’adresse du lien que tu colles', 'Quand tu colles un lien dans le chat'],
   ['Dictée (navigateur)', 'Google (Chrome) ou Apple (Safari)', 'Ton audio', 'Quand tu dictes avec le moteur « Navigateur »'],
   ['Dictée Whisper / voix Piper', 'huggingface.co, cdn.jsdelivr.net, cdnjs (téléchargement)', 'Rien sur toi : l’audio reste sur l’appareil', 'Premier usage uniquement'],
+  ['Usine à vidéos (mouvement 3D)', 'huggingface.co (modèle de profondeur, une fois) · image.pollinations.ai (images des idées)', 'Les idées pour créer les images ; tes photos restent sur l’appareil', 'À chaque vidéo créée à partir d’une idée'],
   ['Lecture de PDF / Word / images à décrire', 'Aucun', 'Traitement sur ton appareil', '—']
 ];
 

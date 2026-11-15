@@ -23,6 +23,10 @@ Vérifié le 13 novembre 2026 par des requêtes réelles (en-tête `Origin: http
 - Images sans clé : des demandes trop rapprochées reçoivent « 402 » en 0,3 s (limite de cadence, pas un vrai paiement) ; un prompt contenant « ; » échoue immédiatement ; un prompt d'environ 90 mots est refusé. NEXUS espace les images (3 s), réessaie après 8/20/40 s, retire les caractères spéciaux et limite le prompt à ~380 caractères.
 - Depuis `localhost`, Pollinations exige un jeton Cloudflare Turnstile : les tests locaux du chat ne sont pas représentatifs (il faut tester sur github.io).
 
+## Vidéo illimitée sur l'appareil (Usine à vidéos) — 15/11/2026
+Recherche mondiale : aucun générateur vidéo IA open source ne tourne aujourd'hui dans le navigateur d'un iPhone. Le seul projet visant l'iPhone (MOVD, WACV 2026) exige une application native compilée avec Xcode. Wan2GP exige un GPU NVIDIA/AMD (4–8 Go de VRAM minimum).
+NEXUS embarque donc son propre moteur (code original, `src/lib/motion.ts`) : profondeur 3D par **Depth Anything V2 Small** (Apache-2.0, 27 Mo, sur l'appareil) puis caméra 3D en WebGL (travelling, orbite, grue, vertigo…), effets (paillettes, pétales, neige, pluie, bokeh…), sous-titres et enregistrement MP4. Testé : 720×1280 MP4, ~10 s par vidéo à partir d'une photo (processeur, sans GPU). Ce n'est pas de la vidéo générée image par image par une IA : le mouvement est une vraie parallaxe 3D calculée depuis la profondeur.
+
 ## Kimi, Z.ai (GLM), Wan, Qwen, Doubao — vérifié le 15/11/2026
 | Modèle | Open source ? | Gratuit dans NEXUS ? | Comment |
 |---|---|---|---|
