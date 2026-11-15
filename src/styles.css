@@ -611,3 +611,13 @@ details summary { cursor: pointer; color: var(--pink2); font-weight: 600; font-s
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- Image de départ (Wan) ---------- */
+.start-image-row { display: flex; gap: 12px; align-items: center; }
+.start-image-row img, .start-placeholder { width: 84px; height: 84px; flex: none; border-radius: 14px; object-fit: cover; border: 1px solid var(--line2); }
+.start-placeholder { display: grid; place-items: center; text-align: center; font-size: 11.5px; color: var(--muted); padding: 6px; background: rgba(239, 148, 189, 0.06); }
+.start-image-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.start-image-actions .secondary-button { min-height: 40px; padding: 8px 14px; font-size: 14px; }
+.suggest-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.suggest-row button { border: 1px dashed var(--line2); background: transparent; color: var(--pink3); border-radius: 99px; padding: 6px 11px; font-size: 13px; min-height: 34px; }
+.suggest-row button.on { border-style: solid; background: rgba(239, 148, 189, 0.15); }

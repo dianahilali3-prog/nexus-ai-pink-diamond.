@@ -23,6 +23,15 @@ Vérifié le 13 novembre 2026 par des requêtes réelles (en-tête `Origin: http
 - Images sans clé : des demandes trop rapprochées reçoivent « 402 » en 0,3 s (limite de cadence, pas un vrai paiement) ; un prompt contenant « ; » échoue immédiatement ; un prompt d'environ 90 mots est refusé. NEXUS espace les images (3 s), réessaie après 8/20/40 s, retire les caractères spéciaux et limite le prompt à ~380 caractères.
 - Depuis `localhost`, Pollinations exige un jeton Cloudflare Turnstile : les tests locaux du chat ne sont pas représentatifs (il faut tester sur github.io).
 
+## Kimi, Z.ai (GLM), Wan, Qwen, Doubao — vérifié le 15/11/2026
+| Modèle | Open source ? | Gratuit dans NEXUS ? | Comment |
+|---|---|---|---|
+| **Kimi** (Moonshot) | Poids ouverts (Kimi K2 : licence MIT modifiée) | Oui, avec crédit gratuit | Pollinations+ : `moonshotai/kimi-k2.6`, `kimi-k3`, `kimi-k3.1-pro` acceptent le « Quest Pollen » gratuit. Pas de version `:free` sur OpenRouter ni sur Groq ce jour. |
+| **GLM** (Z.ai) | Poids ouverts (MIT) | Oui, sous conditions | Z.ai offre GLM-4.7-Flash, GLM-4.5-Flash, GLM-4.6V-Flash gratuitement, **mais son API bloque les navigateurs (pré-vérification CORS sans autorisation, vérifié depuis github.io)**. Accès : Pollinations+ (`z-ai/glm-5.3-flash`, `z-ai/glm-5.3`, crédit gratuit) ou le serveur NEXUS en relais. |
+| **Qwen** (Alibaba) | Poids ouverts (Apache-2.0 pour la plupart) | Oui | Chat : Groq offre gratuit `qwen/qwen3.8-27b` (30 req/min) ; IA locale Qwen2.5 dans le navigateur. Images : espace officiel **Qwen/Qwen-Image** (ZeroGPU). Sur Pollinations, Qwen est réservé au crédit payant. |
+| **Wan** (Alibaba) | Poids ouverts (Apache-2.0) | Oui, avec quota | Image → vidéo via les espaces `zerogpu-aoti/wan2-2-fp8da-aoti-faster` (Wan 2.2) et `multimodalart/wan2-1-fast` (Wan 2.1). L'espace officiel Wan-AI/Wan2.1 est en panne. Quota ZeroGPU quotidien. Sur Pollinations, payant. |
+| **Doubao** (ByteDance) | **Non** : modèles propriétaires | **Non** | Doubao et Seedream/Seedance ne sont pas open source ; payants sur Pollinations. Les modèles ouverts de ByteDance (Seed-OSS 36B, BAGEL) n'ont pas d'accès gratuit fonctionnel : l'espace BAGEL est en panne. |
+
 ## Conditions d'utilisation lues
 - **Pollinations** (mise à jour du 10/10/2026) : service « tel quel », sans garantie ni SLA ; limites et modèles modifiables ; interdits notamment : deepfakes de personnes réelles sans consentement, contenus illégaux, contournement des limites.
 - **Hugging Face ZeroGPU** : usage gratuit pour tous avec quota quotidien ; les comptes PRO ont 8× plus de quota.

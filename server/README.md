@@ -12,6 +12,15 @@ Petite passerelle FastAPI **compatible OpenAI** : elle relaie le chat vers Ollam
 
 > Sans ce serveur, tu peux aussi brancher Ollama directement : lance `OLLAMA_ORIGINS=https://dianahilali3-prog.github.io ollama serve` et saisis `http://localhost:11434/v1`. Chrome autorise `localhost` depuis une page HTTPS ; Safari peut le bloquer.
 
+## Utiliser les modèles GLM gratuits de Z.ai
+L'API de Z.ai refuse les appels venant directement d'un navigateur (CORS). Ce serveur peut la relayer :
+```
+OPENAI_BASE_URL=https://api.z.ai/api/paas/v4
+OPENAI_API_KEY=ta-clé-z.ai        # gratuite sur z.ai → API Keys, à garder dans .env
+NEXUS_MODEL=glm-4.7-flash          # gratuit (aussi : glm-4.5-flash, glm-4.6v-flash)
+```
+Le serveur doit être joignable en HTTPS depuis ton téléphone (hébergement à prévoir).
+
 ## Points d'entrée
 - `GET /health` — état du service.
 - `GET /v1/models` — modèle configuré.

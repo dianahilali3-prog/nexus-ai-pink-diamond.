@@ -108,3 +108,13 @@ export async function fetchSpaceFile(file: unknown, token?: string): Promise<Blo
   if (!res.ok) throw new GradioError(`Téléchargement du résultat impossible (${res.status}).`);
   return res.blob();
 }
+
+/** Envoie un fichier (image) à un espace et renvoie la référence attendue par Gradio. */
+export async function uploadToSpace(space: string, blob: Blob, name: string, token?: string) {
+  const form = new FormData();
+  form.append('files', blob, name);
+  const res = await fetch(`${space}/gradio_api/upload`, { method: 'POST', body: form, headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  if (!res.ok) throw new GradioError(`Envoi de l’image à l’espace impossible (${res.status}).`);
+  const [path] = (await res.json()) as string[];
+  return { path, orig_name: name, mime_type: blob.type || 'image/png', meta: { _type: 'gradio.FileData' } };
+}

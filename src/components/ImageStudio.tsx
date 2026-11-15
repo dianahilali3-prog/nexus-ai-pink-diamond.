@@ -10,9 +10,10 @@ import { AiDisclaimer, copyText, takeIntent, toast, useObjectUrl } from './ui';
 interface Result { id: string; blob: Blob; prompt: string; engine: string; seed: number }
 
 const ENGINES: { id: ImageEngine; label: string; hint: string }[] = [
-  { id: 'auto', label: 'Auto', hint: 'Pollinations, puis FLUX en secours' },
+  { id: 'auto', label: 'Auto', hint: 'Pollinations, puis FLUX et Qwen-Image en secours' },
   { id: 'pollinations', label: 'Pollinations', hint: 'Gratuit, sans clé' },
   { id: 'flux-space', label: 'FLUX (HF)', hint: 'Quota GPU quotidien' },
+  { id: 'qwen-space', label: 'Qwen-Image (HF)', hint: 'Open source Alibaba, quota GPU' },
   { id: 'pollinations-key', label: 'Pollinations+', hint: 'Avec ta clé' }
 ];
 

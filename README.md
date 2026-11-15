@@ -27,7 +27,7 @@ npm run check      # TypeScript
 npm run build      # compile dans dist/
 npm run preview    # aperçu local
 ```
-Pour GitHub Pages, le workflow `.github/workflows/deploy.yml` compile avec `VITE_BASE=/<nom-du-dépôt>/` et publie `dist/`.
+Pour GitHub Pages, le workflow `.github/workflows/deploy.yml` compile avec `VITE_BASE=/<nom-du-dépôt>/` et publie `dist/`. Réglage requis : Settings → Pages → Source : **GitHub Actions**.
 
 ## Structure
 ```

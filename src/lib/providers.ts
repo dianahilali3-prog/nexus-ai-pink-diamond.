@@ -60,7 +60,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     short: 'Pollinations+',
     needsKey: true,
     keyField: 'pollinations',
-    description: 'Des centaines de modèles. Consomme du « Pollen » : gratuit via les quêtes/bonus, sinon payant.',
+    description: 'Des centaines de modèles, dont Kimi (Moonshot) et GLM. Consomme du « Pollen » : Kimi et GLM acceptent le crédit gratuit des quêtes ; Qwen, Wan et Seedream exigent du crédit payant.',
     howTo: 'Connecte-toi sur enter.pollinations.ai → « Keys » → crée une clé secrète (sk_…) avec un plafond de dépense bas. Colle-la ici.',
     keyUrl: 'https://enter.pollinations.ai/keys',
     limits: 'Chaque requête dépense du Pollen (crédit). Fixe un plafond sur la clé.',
@@ -72,7 +72,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     short: 'Mon serveur',
     needsKey: false,
     keyField: 'custom',
-    description: 'Tout serveur compatible OpenAI. Exemple Ollama : http://localhost:11434/v1',
+    description: 'Tout serveur compatible OpenAI : Ollama (http://localhost:11434/v1), LM Studio, llama.cpp, vLLM, ou le serveur NEXUS fourni (qui peut relayer les modèles GLM gratuits de Z.ai).',
     howTo: 'Ollama : lance `OLLAMA_ORIGINS=* ollama serve`, puis `ollama pull qwen2.5:3b`. Depuis un téléphone, il faut une adresse HTTPS joignable.',
     limits: 'Dépend de ta machine. Gratuit, privé, mais lent sur un petit ordinateur.',
     host: 'ton serveur'
@@ -93,6 +93,24 @@ export const LOCAL_MODELS = [
   { id: 'HuggingFaceTB/SmolLM2-360M-Instruct', label: 'SmolLM2 360M (≈ 270 Mo, surtout anglais)' },
   { id: 'onnx-community/Qwen2.5-1.5B-Instruct', label: 'Qwen2.5 1.5B (≈ 1,2 Go, meilleur, WebGPU conseillé)' }
 ];
+
+/** Raccourcis vers des modèles open source connus (vérifiés en novembre 2026). */
+export const SUGGESTED_MODELS: Partial<Record<ProviderId, { id: string; label: string }[]>> = {
+  'pollinations-key': [
+    { id: 'moonshotai/kimi-k2.6', label: 'Kimi K2.6' },
+    { id: 'moonshotai/kimi-k3', label: 'Kimi K3' },
+    { id: 'z-ai/glm-5.3-flash', label: 'GLM-5.3 Flash' },
+    { id: 'z-ai/glm-5.3', label: 'GLM-5.3' }
+  ],
+  groq: [
+    { id: 'qwen/qwen3.8-27b', label: 'Qwen 3.8 27B' },
+    { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B' }
+  ],
+  local: [
+    { id: 'onnx-community/Qwen2.5-0.5B-Instruct', label: 'Qwen2.5 0.5B' },
+    { id: 'onnx-community/Qwen2.5-1.5B-Instruct', label: 'Qwen2.5 1.5B' }
+  ]
+};
 
 export class ProviderError extends Error {
   constructor(message: string, public status?: number, public retryable = false) {
@@ -125,7 +143,7 @@ export function activeProviders(s = getSettings()): ProviderId[] {
 
 export function supportsVision(id: ProviderId, model: string) {
   if (id === 'pollinations' || id === 'local') return false;
-  return /vl|vision|gemma-?[34]|gemini|gpt-4o|gpt-4\.1|gpt-5|llava|pixtral|llama-4|omni|claude|qwen.*vl|maverick|scout/i.test(model);
+  return /glm-[0-9.]+v|glm-5v|vl|vision|gemma-?[34]|gemini|gpt-4o|gpt-4\.1|gpt-5|llava|pixtral|llama-4|omni|claude|qwen.*vl|maverick|scout/i.test(model);
 }
 
 function headers(id: ProviderId, s: Settings): Record<string, string> {

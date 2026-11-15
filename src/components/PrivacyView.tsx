@@ -3,10 +3,10 @@ import { AiDisclaimer } from './ui';
 
 const ROWS: [string, string, string, string][] = [
   ['Chat (par défaut)', 'text.pollinations.ai', 'Tes messages, l’historique récent de la conversation, les extraits de documents/web utilisés', 'Toujours, sauf si tu désactives Pollinations'],
-  ['Chat (options)', 'openrouter.ai · api.groq.com · gen.pollinations.ai · ton serveur', 'Mêmes données + ta clé pour ce service', 'Seulement si tu actives ce fournisseur'],
+  ['Chat (options)', 'openrouter.ai · api.groq.com · gen.pollinations.ai (Kimi, GLM…) · ton serveur', 'Mêmes données + ta clé pour ce service', 'Seulement si tu actives ce fournisseur'],
   ['IA dans le navigateur', 'huggingface.co (téléchargement)', 'Rien sur toi : seul le modèle est téléchargé', 'Seulement si tu l’actives'],
   ['Images', 'image.pollinations.ai', 'Le prompt de l’image (envoyé dans l’adresse)', 'À chaque image'],
-  ['Images (secours) & vidéo IA', '*.hf.space (Hugging Face)', 'Le prompt, ton jeton HF si tu l’as saisi', 'Si Pollinations échoue, ou en mode Vidéo IA'],
+  ['Images (secours) & vidéo IA', 'Espaces Hugging Face : FLUX, Qwen-Image, Wan, LTX-Video', 'Le prompt, l’image à animer (Wan), ton jeton HF si tu l’as saisi', 'Si Pollinations échoue, ou en mode Vidéo IA'],
   ['Recherche web', 'fr.wikipedia.org (ou ton SearXNG)', 'Les mots-clés de ta question', 'Quand le globe 🌐 est activé ou avec l’agent Orion'],
   ['Lecture de liens', 'r.jina.ai', 'L’adresse du lien que tu colles', 'Quand tu colles un lien dans le chat'],
   ['Dictée (navigateur)', 'Google (Chrome) ou Apple (Safari)', 'Ton audio', 'Quand tu dictes avec le moteur « Navigateur »'],

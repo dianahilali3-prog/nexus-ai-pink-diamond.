@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 export type ProviderId = 'pollinations' | 'pollinations-key' | 'openrouter' | 'groq' | 'custom' | 'local';
-export type ImageEngine = 'auto' | 'pollinations' | 'flux-space' | 'pollinations-key';
+export type ImageEngine = 'auto' | 'pollinations' | 'flux-space' | 'qwen-space' | 'pollinations-key';
 
 export interface Settings {
   providerOrder: ProviderId[];
@@ -36,7 +36,7 @@ export const DEFAULT_SETTINGS: Settings = {
   enabled: { pollinations: true, 'pollinations-key': false, openrouter: false, groq: false, custom: false, local: false },
   models: {
     pollinations: 'openai',
-    'pollinations-key': 'openai/gpt-5.4-nano',
+    'pollinations-key': 'moonshotai/kimi-k2.6',
     openrouter: 'google/gemma-4-31b-it:free',
     groq: 'llama-3.3-70b-versatile',
     custom: 'qwen2.5:3b',

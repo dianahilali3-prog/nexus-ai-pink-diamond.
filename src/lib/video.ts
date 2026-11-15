@@ -1,4 +1,4 @@
-import { callSpace, fetchSpaceFile } from './gradio';
+import { callSpace, fetchSpaceFile, GradioError, uploadToSpace } from './gradio';
 import { quickChat } from './providers';
 import { getSettings } from './settings';
 
@@ -287,4 +287,37 @@ export async function pollinationsVideo(prompt: string, seconds: number, signal?
   const blob = await res.blob();
   if (!blob.type.startsWith('video/')) throw new Error('Pollinations+ : réponse inattendue (pas une vidéo).');
   return blob;
+}
+
+/* =========================================================
+   4. Wan (Alibaba, poids ouverts Apache-2.0) : image → vidéo
+   Espaces Hugging Face communautaires (ZeroGPU, quota quotidien).
+   ========================================================= */
+const WAN_SPACES = [
+  { url: 'https://zerogpu-aoti-wan2-2-fp8da-aoti-faster.hf.space', label: 'Wan 2.2', build: (img: unknown, p: string, sec: number) => [img, p, 6, '', sec, 1, 1, 42, true] },
+  { url: 'https://multimodalart-wan2-1-fast.hf.space', label: 'Wan 2.1', build: (img: unknown, p: string, sec: number) => [img, p, 512, 896, '', Math.min(sec, 3), 1, 4, 42, true] }
+];
+
+export async function wanVideo(image: Blob, prompt: string, opts: { seconds: number; signal?: AbortSignal; onStatus?: (t: string) => void }) {
+  const token = getSettings().keys.hf.trim() || undefined;
+  const errors: string[] = [];
+  for (const sp of WAN_SPACES) {
+    try {
+      opts.onStatus?.(`${sp.label} (Hugging Face) : envoi de l’image…`);
+      const file = await uploadToSpace(sp.url, image, 'scene.png', token);
+      const out = await callSpace(sp.url, 'generate_video', sp.build(file, prompt, opts.seconds), {
+        token,
+        signal: opts.signal,
+        onStatus: s => opts.onStatus?.(`${sp.label} : ${s.text}`),
+        timeoutMs: 420_000
+      });
+      return { blob: await fetchSpaceFile(out[0], token), engine: `${sp.label} (HF)` };
+    } catch (e) {
+      if (opts.signal?.aborted) throw e;
+      errors.push(`${sp.label} : ${e instanceof Error ? e.message : e}`);
+      // Quota épuisé : inutile d’essayer l’autre espace (même quota ZeroGPU).
+      if (e instanceof GradioError && e.quota) break;
+    }
+  }
+  throw new Error(errors.join('\n'));
 }

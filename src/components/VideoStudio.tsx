@@ -6,8 +6,8 @@ import {
 import { DOC_ACCEPT, readDocument } from '../lib/documents';
 import { downloadBlob, enhancePrompt, extFor, generateImage, STYLES } from '../lib/images';
 import { useSettings } from '../lib/settings';
-import { addToGallery, getGalleryBlob } from '../lib/storage';
-import { ltxVideo, makeStoryboard, pollinationsVideo, recorderSupport, renderSlideshow, type Scene } from '../lib/video';
+import { addToGallery, getGalleryBlob, listGallery } from '../lib/storage';
+import { ltxVideo, makeStoryboard, pollinationsVideo, recorderSupport, renderSlideshow, wanVideo, type Scene } from '../lib/video';
 import { AiDisclaimer, Progress, takeIntent, toast, Toggle, useObjectUrl } from './ui';
 
 type Format = 'portrait' | 'landscape' | 'square';
@@ -306,7 +306,10 @@ function SceneCard({ s, i, format, busy, onPatch, onGen, onDelete }: { s: Scene;
 function AiVideo() {
   const settings = useSettings();
   const [prompt, setPrompt] = useState('');
-  const [engine, setEngine] = useState<'ltx' | 'pollinations'>('ltx');
+  const [engine, setEngine] = useState<'wan' | 'ltx' | 'pollinations'>('wan');
+  const [startImage, setStartImage] = useState<Blob | null>(null);
+  const startUrl = useObjectUrl(startImage);
+  const imgPick = useRef<HTMLInputElement>(null);
   const [format, setFormat] = useState<Format>('landscape');
   const [seconds, setSeconds] = useState(3);
   const [busy, setBusy] = useState(false);
@@ -327,11 +330,29 @@ function AiVideo() {
         setStatus('NEXUS précise la scène…');
         try { p = await enhancePrompt(`${prompt}\n(For a short video: describe one clear action and camera movement.)`, '', ctrl.current.signal); } catch { /* brut */ }
       }
-      const blob = engine === 'ltx'
-        ? await ltxVideo(p, { format, seconds, signal: ctrl.current.signal, onStatus: setStatus })
-        : await pollinationsVideo(p, seconds, ctrl.current.signal);
+      let blob: Blob;
+      let source: string;
+      if (engine === 'wan') {
+        // Wan anime une image : celle choisie, sinon une image créée à partir du texte.
+        let img = startImage;
+        if (!img) {
+          const d = DIMS[format];
+          const r = await generateImage(p, { width: d.w, height: d.h, signal: ctrl.current.signal, onStatus: t => setStatus(`Image de départ — ${t}`) });
+          img = r.blob;
+          setStartImage(img);
+        }
+        const w = await wanVideo(img, p, { seconds, signal: ctrl.current.signal, onStatus: setStatus });
+        blob = w.blob;
+        source = w.engine;
+      } else if (engine === 'ltx') {
+        blob = await ltxVideo(p, { format, seconds, signal: ctrl.current.signal, onStatus: setStatus });
+        source = 'LTX-Video (HF)';
+      } else {
+        blob = await pollinationsVideo(p, seconds, ctrl.current.signal);
+        source = `Pollinations+ ${settings.video.keyModel}`;
+      }
       setVideo(blob);
-      await addToGallery(blob, { kind: 'video', prompt: p, source: engine === 'ltx' ? 'LTX-Video (HF)' : `Pollinations+ ${settings.video.keyModel}` });
+      await addToGallery(blob, { kind: 'video', prompt: p, source });
       toast('Vidéo créée et enregistrée dans ta galerie.');
     } catch (e) {
       if ((e as Error)?.name !== 'AbortError') setError(e instanceof Error ? e.message : 'Échec.');
@@ -352,7 +373,8 @@ function AiVideo() {
           <div>
             <b>À savoir, honnêtement :</b>
             <ul>
-              <li><b>LTX-Video</b> (open source) tourne sur un espace Hugging Face gratuit avec un <b>quota GPU quotidien</b> par personne : quelques vidéos par jour au mieux, parfois aucune si le quota est épuisé ou l’espace en veille.</li>
+              <li><b>Wan 2.2 / 2.1</b> (Alibaba, open source) <b>anime une image</b> : la tienne, la dernière de ta galerie, ou une image créée à partir de ton texte.</li>
+              <li><b>Wan</b> et <b>LTX-Video</b> tournent sur des espaces Hugging Face gratuits avec un <b>quota GPU quotidien</b> par personne : quelques vidéos par jour au mieux, parfois aucune si le quota est épuisé ou l’espace en veille.</li>
               <li>Un <b>jeton Hugging Face gratuit</b> (Réglages → Clés) augmente ce quota.</li>
               <li><b>Pollinations+</b> (Wan, Veo…) exige une clé avec crédit « Pollen ».</li>
               <li>Le mode <b>Projet → vidéo</b> fonctionne toujours, sans quota GPU.</li>
@@ -364,8 +386,9 @@ function AiVideo() {
         <div className="two-cols">
           <div>
             <label className="field-label" htmlFor="ve">Moteur</label>
-            <select id="ve" className="settings-input" value={engine} onChange={e => setEngine(e.target.value as 'ltx' | 'pollinations')}>
-              <option value="ltx">LTX-Video (Hugging Face, gratuit avec quota)</option>
+            <select id="ve" className="settings-input" value={engine} onChange={e => setEngine(e.target.value as 'wan' | 'ltx' | 'pollinations')}>
+              <option value="wan">Wan 2.2 — anime une image (HF, quota)</option>
+              <option value="ltx">LTX-Video — texte seul (HF, quota)</option>
               <option value="pollinations" disabled={!settings.keys.pollinations}>Pollinations+ {settings.keys.pollinations ? `(${settings.video.keyModel})` : '(clé requise)'}</option>
             </select>
           </div>
@@ -376,6 +399,24 @@ function AiVideo() {
             </select>
           </div>
         </div>
+        {engine === 'wan' && (
+          <div className="start-image">
+            <span className="field-label">Image de départ</span>
+            <div className="start-image-row">
+              {startUrl ? <img src={startUrl} alt="Image de départ" /> : <span className="start-placeholder">Créée à partir de ton texte</span>}
+              <div className="start-image-actions">
+                <button className="secondary-button" onClick={() => imgPick.current?.click()}>Choisir une image</button>
+                <button className="ghost-button" onClick={async () => {
+                  const item = (await listGallery()).find(g => g.kind === 'image');
+                  const b = item && (await getGalleryBlob(item.id));
+                  if (b) { setStartImage(b); toast('Dernière image de la galerie sélectionnée.'); } else toast('Aucune image dans ta galerie.', 'info');
+                }}>Dernière image de ma galerie</button>
+                {startImage && <button className="ghost-button" onClick={() => setStartImage(null)}>Retirer</button>}
+              </div>
+            </div>
+            <input ref={imgPick} type="file" accept="image/*" hidden onChange={e => { const f = e.target.files?.[0]; if (f) setStartImage(f); e.target.value = ''; }} />
+          </div>
+        )}
         <label className="field-label" htmlFor="vs">Durée : {seconds} s</label>
         <input id="vs" type="range" className="range" min={2} max={4} value={seconds} onChange={e => setSeconds(Number(e.target.value))} />
         {busy ? (

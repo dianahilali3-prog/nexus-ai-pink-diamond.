@@ -32,6 +32,7 @@ export interface ImageResult {
 export type StatusFn = (text: string) => void;
 
 const FLUX_SPACE = 'https://black-forest-labs-flux-1-schnell.hf.space';
+const QWEN_SPACE = 'https://qwen-qwen-image.hf.space';
 
 function withTimeout(signal: AbortSignal | undefined, ms: number) {
   const c = new AbortController();
@@ -123,6 +124,20 @@ export async function fluxSpaceImage(prompt: string, w: number, h: number, seed:
   return fetchSpaceFile(out[0], token);
 }
 
+/** Qwen-Image (Alibaba, poids ouverts Apache-2.0) sur l’espace officiel Hugging Face (quota ZeroGPU). */
+export async function qwenSpaceImage(prompt: string, w: number, h: number, seed: number, onStatus?: StatusFn, signal?: AbortSignal) {
+  const token = getSettings().keys.hf.trim() || undefined;
+  const r = w / h;
+  const ratio = r > 1.5 ? '16:9' : r > 1.15 ? '4:3' : r < 0.67 ? '9:16' : r < 0.87 ? '3:4' : '1:1';
+  const out = await callSpace(QWEN_SPACE, 'infer', [prompt, seed, false, ratio, 4, 30, false], {
+    token,
+    signal,
+    onStatus: s => onStatus?.(`Qwen-Image (Hugging Face) : ${s.text}`),
+    timeoutMs: 300_000
+  });
+  return fetchSpaceFile(out[0], token);
+}
+
 export async function generateImage(
   prompt: string,
   opts: { width: number; height: number; seed?: number; engine?: ImageEngine; signal?: AbortSignal; onStatus?: StatusFn }
@@ -132,7 +147,7 @@ export async function generateImage(
   const seed = opts.seed ?? Math.floor(Math.random() * 2_000_000_000);
   const chain: Exclude<ImageEngine, 'auto'>[] =
     engine === 'auto'
-      ? ['pollinations', 'flux-space', ...(s.keys.pollinations.trim() ? (['pollinations-key'] as const) : [])]
+      ? ['pollinations', 'flux-space', 'qwen-space', ...(s.keys.pollinations.trim() ? (['pollinations-key'] as const) : [])]
       : [engine];
   const errors: string[] = [];
   for (const e of chain) {
@@ -145,11 +160,14 @@ export async function generateImage(
       } else if (e === 'pollinations-key') {
         opts.onStatus?.(`Pollinations+ (${s.image.keyModel}) : création…`);
         blob = await pollinationsKeyImage(prompt, opts.width, opts.height, seed, opts.signal);
+      } else if (e === 'qwen-space') {
+        opts.onStatus?.('Qwen-Image (Hugging Face) : connexion…');
+        blob = await qwenSpaceImage(prompt, opts.width, opts.height, seed, opts.onStatus, opts.signal);
       } else {
         opts.onStatus?.('FLUX (Hugging Face) : connexion…');
         blob = await fluxSpaceImage(prompt, opts.width, opts.height, seed, opts.onStatus, opts.signal);
       }
-      return { blob, engine: e === 'pollinations' ? 'Pollinations' : e === 'flux-space' ? 'FLUX.1 schnell (HF)' : `Pollinations+ ${s.image.keyModel}`, prompt, seed, width: opts.width, height: opts.height };
+      return { blob, engine: e === 'pollinations' ? 'Pollinations' : e === 'flux-space' ? 'FLUX.1 schnell (HF)' : e === 'qwen-space' ? 'Qwen-Image (HF)' : `Pollinations+ ${s.image.keyModel}`, prompt, seed, width: opts.width, height: opts.height };
     } catch (err) {
       if (opts.signal?.aborted) throw new DOMException('Arrêté', 'AbortError');
       errors.push(err instanceof Error ? err.message : String(err));

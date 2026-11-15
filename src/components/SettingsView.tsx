@@ -3,7 +3,7 @@ import {
   ArrowDown, ArrowUp, Brain, CheckCircle2, Cpu, Database, Download, ExternalLink, Eye, EyeOff, Globe, Image as ImageIcon, KeyRound,
   Loader2, Mic, Plug, Smartphone, Trash2, Upload, Volume2, XCircle
 } from 'lucide-react';
-import { LOCAL_MODELS, listModels, PROVIDERS, quickChat } from '../lib/providers';
+import { LOCAL_MODELS, listModels, PROVIDERS, quickChat, SUGGESTED_MODELS } from '../lib/providers';
 import { setSettings, useSettings, resetSettings, type ProviderId } from '../lib/settings';
 import { capabilities, getVoices, LANGS, onVoicesChanged, PIPER_VOICES, speak, stopSpeaking, WHISPER_MODELS } from '../lib/speech';
 import { addMemory, deleteMemory, exportAll, importAll, listMemory, wipeEverything } from '../lib/storage';
@@ -129,6 +129,13 @@ function ProviderCard({ id, index, total }: { id: ProviderId; index: number; tot
                 <button className="secondary-button" onClick={fetchModels} disabled={loading}>{loading ? <Loader2 size={15} className="spin" /> : 'Liste'}</button>
               </div>
               <datalist id={`models-${id}`}>{models.map(m => <option key={m} value={m} />)}</datalist>
+              {SUGGESTED_MODELS[id] && (
+                <div className="suggest-row" aria-label="Modèles suggérés">
+                  {SUGGESTED_MODELS[id]!.map(m => (
+                    <button key={m.id} className={s.models[id] === m.id ? 'on' : ''} onClick={() => setSettings(x => ({ ...x, models: { ...x.models, [id]: m.id } }))}>{m.label}</button>
+                  ))}
+                </div>
+              )}
             </>
           )}
           <p className="limits"><b>Limites :</b> {info.limits}</p>
@@ -282,7 +289,7 @@ export default function SettingsView() {
       </Section>
 
       <Section icon={ImageIcon} title="Images & vidéo" id="set-media">
-        <p className="howto">Un <b>jeton Hugging Face gratuit</b> augmente ton quota GPU quotidien pour FLUX (images) et LTX-Video (vidéos). Crée un compte sur huggingface.co → Settings → Access Tokens → « Create new token » (type <b>Read</b>). <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer">Ouvrir <ExternalLink size={12} /></a></p>
+        <p className="howto">Un <b>jeton Hugging Face gratuit</b> augmente ton quota GPU quotidien pour FLUX et Qwen-Image (images), Wan et LTX-Video (vidéos). Crée un compte sur huggingface.co → Settings → Access Tokens → « Create new token » (type <b>Read</b>). <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer">Ouvrir <ExternalLink size={12} /></a></p>
         <KeyInput field="hf" label="Jeton Hugging Face (hf_…)" />
         <KeyInput field="pollinations" label="Clé Pollinations (sk_…, facultative)" />
         <label className="field-label" htmlFor="pim">Modèle d’image Pollinations+ (avec clé)</label>
